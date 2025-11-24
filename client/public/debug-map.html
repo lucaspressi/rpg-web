@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Debug Tile Map</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #000;
+      color: #fff;
+      font-family: monospace;
+    }
+    canvas {
+      border: 2px solid #fff;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+    .info {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Debug Tile Map - 10x10</h1>
+  <canvas id="canvas" width="320" height="320"></canvas>
+  <div class="info">
+    <p>Rows 0-2: GRASS (green)</p>
+    <p>Rows 3-5: DIRT (brown)</p>
+    <p>Rows 6-9: WATER (blue)</p>
+  </div>
+  
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    const img = new Image();
+    img.src = '/gfx/Overworld.png';
+    
+    img.onload = () => {
+      const TILE_SIZE = 16;
+      const RENDER_SIZE = 32;
+      
+      // Tile coordinates (verified)
+      const TILES = {
+        GRASS_1: { x: 0, y: 10 },
+        GRASS_2: { x: 5, y: 10 },
+        DIRT: { x: 4, y: 13 },
+        WATER: { x: 0, y: 2 },
+      };
+      
+      // Create 10x10 debug map
+      for (let y = 0; y < 10; y++) {
+        for (let x = 0; x < 10; x++) {
+          let tile;
+          
+          if (y <= 2) {
+            // Rows 0-2: GRASS (alternate between two variants)
+            tile = (x + y) % 2 === 0 ? TILES.GRASS_1 : TILES.GRASS_2;
+          } else if (y <= 5) {
+            // Rows 3-5: DIRT
+            tile = TILES.DIRT;
+          } else {
+            // Rows 6-9: WATER
+            tile = TILES.WATER;
+          }
+          
+          // Draw tile
+          ctx.drawImage(
+            img,
+            tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE,
+            x * RENDER_SIZE, y * RENDER_SIZE, RENDER_SIZE, RENDER_SIZE
+          );
+        }
+      }
+      
+      console.log('Debug map rendered successfully!');
+      console.log('GRASS (0,10) + (5,10) - Green');
+      console.log('DIRT (4,13) - Brown');
+      console.log('WATER (0,2) - Blue');
+    };
+    
+    img.onerror = () => {
+      console.error('Failed to load Overworld.png');
+    };
+  </script>
+</body>
+</html>
